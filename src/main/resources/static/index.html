@@ -1,0 +1,198 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TechnoHertz | Employee Login</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #f2f5fa;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .login-box {
+            background: white;
+            width: 100%;
+            max-width: 380px;
+            padding: 35px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
+        }
+
+        .company-name {
+            text-align: center;
+            color: #1565c0;
+            font-size: 30px;
+            font-weight: bold;
+            margin: 0 0 8px;
+        }
+
+        h2 {
+            text-align: center;
+            color: #333;
+            font-size: 21px;
+            margin: 0 0 28px;
+        }
+
+        label {
+            display: block;
+            margin-top: 16px;
+            margin-bottom: 7px;
+            color: #333;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 15px;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #1565c0;
+            box-shadow: 0 0 4px rgba(21, 101, 192, 0.25);
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            margin-top: 25px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            background: #1565c0;
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        button:hover {
+            background: #0d47a1;
+        }
+
+        button:disabled {
+            background: #789cc8;
+            cursor: not-allowed;
+        }
+
+        #message {
+            text-align: center;
+            margin-top: 15px;
+            font-size: 14px;
+            color: #c62828;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 22px;
+            color: #777;
+            font-size: 12px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="login-box">
+
+        <h1 class="company-name">TechnoHertz</h1>
+        <h2>Employee Login</h2>
+
+        <form id="loginForm">
+
+            <label for="username">Username</label>
+            <input
+                type="text"
+                id="username"
+                name="username"
+                placeholder="Enter your username"
+                autocomplete="username"
+                required>
+
+            <label for="password">Password</label>
+            <input
+                type="password"
+                id="password"
+                name="password"
+                placeholder="Enter your password"
+                autocomplete="current-password"
+                required>
+
+            <button type="submit" id="loginButton">Login</button>
+
+        </form>
+
+        <p id="message" role="alert"></p>
+
+        <div class="footer">
+            TechnoHertz | Login Logout Tracker
+        </div>
+
+    </div>
+
+    <script>
+        document.getElementById("loginForm").addEventListener("submit", async function (event) {
+            event.preventDefault();
+
+            const username = document.getElementById("username").value.trim();
+            const password = document.getElementById("password").value;
+            const message = document.getElementById("message");
+            const loginButton = document.getElementById("loginButton");
+
+            const formData = new URLSearchParams();
+            formData.append("username", username);
+            formData.append("password", password);
+
+            message.textContent = "";
+            loginButton.disabled = true;
+            loginButton.textContent = "Logging in...";
+
+            try {
+                const response = await fetch("/api/auth/login", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/x-www-form-urlencoded"
+                    },
+                    body: formData
+                });
+
+                if (!response.ok) {
+                    throw new Error("Login failed. Check your credentials or session status.");
+                }
+
+                const data = await response.json();
+
+                sessionStorage.setItem("sessionId", data.id);
+                sessionStorage.setItem("fullName", data.user.fullName);
+
+                window.location.href = "/dashboard.html";
+
+            } catch (error) {
+                message.textContent = error.message;
+            } finally {
+                loginButton.disabled = false;
+                loginButton.textContent = "Login";
+            }
+        });
+    </script>
+
+</body>
+</html>
+```
