@@ -2,6 +2,8 @@ package LoginLogoutTracker;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.server.ResponseStatusException;
 
 import org.springframework.stereotype.Service;
 
@@ -18,23 +20,36 @@ public class AuthService {
     }
 
     public LoginSession login(String username, String password) {
+    	
+    	User user = userRepository.findByUsername(username)
+    		    .orElseThrow(() -> new ResponseStatusException(
+    		        HttpStatus.UNAUTHORIZED,
+    		        "Invalid username or password"
+    		    ));
 
-        User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new RuntimeException("Invalid username"));
-
-        if (!user.getPassword().equals(password)) {
-            throw new RuntimeException("Invalid password");
+                if (!user.getPassword().equals(password)) {
+        	throw new ResponseStatusException(
+        		    HttpStatus.UNAUTHORIZED,
+        		    "Invalid username or password"
+        		);
         }
 
-        if (!user.getActive()) {
-            throw new RuntimeException("User account is inactive");
-        }
-        if (loginSessionRepository.findByUser_IdOrderByLoginTimeDesc(user.getId())
-                .stream()
-                .anyMatch(session -> "ACTIVE".equals(session.getStatus()))) {
+                if (user.getActive() == null || !user.getActive()) {
+                    throw new ResponseStatusException(
+                        HttpStatus.UNAUTHORIZED,
+                        "User account is inactive"
+                    );
+                }
 
-            throw new RuntimeException("User is already logged in");
-        }
+if (loginSessionRepository.findByUser_IdOrderByLoginTimeDesc(user.getId())
+        .stream()
+        .anyMatch(session -> "ACTIVE".equals(session.getStatus()))) {
+
+    throw new ResponseStatusException(
+        HttpStatus.CONFLICT,
+        "User is already logged in"
+    );
+}
 
         LoginSession session = new LoginSession();
 
@@ -49,8 +64,10 @@ public class AuthService {
 
         LoginSession session = loginSessionRepository
                 .findByIdAndStatus(sessionId, "ACTIVE")
-                .orElseThrow(() -> new RuntimeException("Active session not found"));
-
+                .orElseThrow(() -> new ResponseStatusException(
+                	    HttpStatus.NOT_FOUND,
+                	    "Active session not found"
+                	));
         LocalDateTime logoutTime = LocalDateTime.now();
 
         session.setLogoutTime(logoutTime);

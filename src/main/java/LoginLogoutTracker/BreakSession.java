@@ -1,7 +1,9 @@
+
 package LoginLogoutTracker;
 
 import java.time.LocalDateTime;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -16,15 +18,23 @@ public class BreakSession {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "user_id", nullable = false)
+    @JoinColumn(name = "users_id", nullable = false)
     private User user;
 
+    @Column(name = "break_start")
     private LocalDateTime breakStart;
+
+    @Column(name = "break_end")
     private LocalDateTime breakEnd;
+
+    @Column(name = "break_duration_seconds")
     private Long breakDurationSeconds;
+
+    @Column(name = "status")
     private String status;
 
     public BreakSession() {

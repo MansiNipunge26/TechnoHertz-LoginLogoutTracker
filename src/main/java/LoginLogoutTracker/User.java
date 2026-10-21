@@ -1,6 +1,8 @@
+
 package LoginLogoutTracker;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -13,15 +15,20 @@ public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private Long id;
 
+    @Column(name = "username")
     private String username;
-    
+
     @JsonIgnore
+    @Column(name = "password")
     private String password;
 
+    @Column(name = "full_name")
     private String fullName;
-
+    
+    @Column(name = "active")
     private Boolean active = true;
 
     public User() {

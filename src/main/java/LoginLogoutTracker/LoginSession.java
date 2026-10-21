@@ -3,6 +3,7 @@ package LoginLogoutTracker;
 
 import java.time.LocalDateTime;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -17,18 +18,23 @@ public class LoginSession {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private Long id;
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
+    @Column(name = "login_time")
     private LocalDateTime loginTime;
 
+    @Column(name = "logout_time")
     private LocalDateTime logoutTime;
 
+    @Column(name = "duration_seconds")
     private Long durationSeconds;
 
+    @Column(name = "status")
     private String status;
 
     public LoginSession() {

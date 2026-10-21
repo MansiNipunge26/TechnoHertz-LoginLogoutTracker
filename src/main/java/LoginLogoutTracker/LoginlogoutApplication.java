@@ -9,5 +9,5 @@ public class LoginlogoutApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(LoginlogoutApplication.class, args);
 	}
-
+	
 }
