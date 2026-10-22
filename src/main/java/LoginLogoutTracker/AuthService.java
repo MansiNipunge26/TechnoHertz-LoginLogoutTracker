@@ -3,6 +3,8 @@ package LoginLogoutTracker;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -23,8 +25,11 @@ public class AuthService {
 
     public LoginSession login(String username, String password) {
 
-        User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new ResponseStatusException(
+        Optional<User> result =
+                userRepository.findByUsername(username);
+
+        User user = result.orElseThrow(() ->
+                new ResponseStatusException(
                         HttpStatus.UNAUTHORIZED,
                         "Invalid username or password"));
 
@@ -44,7 +49,8 @@ public class AuthService {
         boolean activeSession = loginSessionRepository
                 .findByUser_IdOrderByLoginTimeDesc(user.getId())
                 .stream()
-                .anyMatch(session -> "ACTIVE".equals(session.getStatus()));
+                .anyMatch(session ->
+                        "ACTIVE".equals(session.getStatus()));
 
         if (activeSession) {
             throw new ResponseStatusException(
@@ -64,9 +70,10 @@ public class AuthService {
 
         LoginSession session = loginSessionRepository
                 .findByIdAndStatus(sessionId, "ACTIVE")
-                .orElseThrow(() -> new ResponseStatusException(
-                        HttpStatus.NOT_FOUND,
-                        "Active session not found"));
+                .orElseThrow(() ->
+                        new ResponseStatusException(
+                                HttpStatus.NOT_FOUND,
+                                "Active session not found"));
 
         LocalDateTime logoutTime = LocalDateTime.now();
         session.setLogoutTime(logoutTime);
@@ -81,7 +88,7 @@ public class AuthService {
         return loginSessionRepository.save(session);
     }
 
-    public java.util.List<LoginSession> getHistory(Long userId) {
+    public List<LoginSession> getHistory(Long userId) {
         return loginSessionRepository
                 .findByUser_IdOrderByLoginTimeDesc(userId);
     }

@@ -22,7 +22,7 @@ public class AuthController {
             @RequestParam String username,
             @RequestParam String password) {
 
-        return authService.login(username, password);
+    	return authService.login(username, password);
     }
 
     @PostMapping("/logout/{sessionId}")
